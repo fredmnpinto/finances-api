@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  post 'expenses' => 'expenses#create'
+  get 'expenses/:expense_id' => 'expenses#show'
+  get 'expenses' => 'expenses#index'
+
   post 'groups' => 'groups#create'
   get 'groups/:group_id' => 'groups#show'
   get 'groups' => 'groups#index'

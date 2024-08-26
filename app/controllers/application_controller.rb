@@ -16,4 +16,12 @@ class ApplicationController < ActionController::API
 
     render json: { message: 'Group not found' }, status: :not_found if @group.nil?
   end
+
+  def require_expense
+    return render json: { message: 'Missing expense parameters' }, status: :bad_request unless params.keys.any? { |param_key| %w[expense_id].include?(param_key) }
+
+    @expense = Expense.find(params[:expense_id]) if params[:expense_id]
+
+    render json: { message: 'Expense not found' }, status: :not_found if @expense.nil?
+  end
 end
