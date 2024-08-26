@@ -1,4 +1,11 @@
 Rails.application.routes.draw do
+  post 'groups' => 'groups#create'
+  get 'groups/:group_id' => 'groups#show'
+  get 'groups' => 'groups#index'
+
+  post 'users' => 'users#create'
+  get 'users/:user_id' => 'users#show'
+  get 'users' => 'users#list'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
