@@ -1,19 +1,12 @@
 class UsersController < ApplicationController
-  before_action :require_user, only: %i[show destroy]
-  before_action :require_group, only: %i[list]
+  before_action :require_user, only: %i[show destroy update]
+  before_action :require_group, only: %i[list create]
+  before_action :require_user_params, only: %i[create update]
 
   def create
-    return render json: { message: 'Missing user parameters' }, status: :bad_request if user_params.empty?
-
-    user = User.create(user_params.reject { |key| key == 'group_id' })
+    user = User.create(user_params.merge(groups: [@group]))
     unless user.errors.empty?
       return render json: { message: user.errors.full_messages }, status: :bad_request
-    end
-
-    begin
-      user.groups << Group.find(user_params[:group_id])
-    rescue ActiveRecord::RecordNotFound => e
-      logger.warn("UsersController#create #{e.full_message}")
     end
 
     render json: user, status: :created
@@ -27,6 +20,12 @@ class UsersController < ApplicationController
     render json: { users: User.joins(:groups).where('groups.id' => @group.id) }
   end
 
+  def update
+    @user.update(user_params)
+
+    render json: @user, status: :ok
+  end
+
   def destroy
     @user.destroy!
 
@@ -38,6 +37,10 @@ class UsersController < ApplicationController
 
   private
   def user_params
-    params[:user].permit(:first_name, :last_name, :email, :group_id)
+    params[:user]&.permit(:first_name, :last_name, :email)
+  end
+
+  def require_user_params
+    render json: { message: 'Missing user parameters' }, status: :bad_request if user_params.nil?
   end
 end

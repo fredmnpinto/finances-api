@@ -2,15 +2,18 @@ Rails.application.routes.draw do
   post 'expenses' => 'expenses#create'
   get 'expenses/:expense_id' => 'expenses#show'
   delete 'expenses/:expense_id' => 'expenses#destroy'
+  patch 'expenses/:expense_id' => 'expenses#update'
   get 'expenses' => 'expenses#index'
 
   post 'groups' => 'groups#create'
   get 'groups/:group_id' => 'groups#show'
   delete 'groups/:group_id' => 'groups#destroy'
+  patch 'groups/:group_id' => 'groups#update'
   get 'groups' => 'groups#index'
 
   post 'users' => 'users#create'
   get 'users/:user_id' => 'users#show'
+  patch 'users/:user_id' => 'users#update'
   delete 'users/:user_id' => 'users#destroy'
   get 'users' => 'users#list'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
