@@ -1,5 +1,5 @@
 class ExpensesController < ApplicationController
-  before_action :require_expense, only: %i[show]
+  before_action :require_expense, only: %i[show destroy]
   before_action :require_group, only: %i[index create]
 
   def create
@@ -21,6 +21,15 @@ class ExpensesController < ApplicationController
 
   def index
     render json: { groups: Expense.joins(:group).where('groups.id' => @group.id) }
+  end
+
+  def destroy
+    @expense.destroy!
+
+    render json: { message: 'Expense deleted' }, status: :ok
+
+  rescue StandardError => e
+    render json: { message: e.message }, status: :bad_request
   end
 
   private

@@ -1,5 +1,5 @@
 class GroupsController < ApplicationController
-  before_action :require_group, only: %i[show]
+  before_action :require_group, only: %i[show destroy]
   before_action :require_user, only: %i[index]
 
   def create
@@ -19,6 +19,15 @@ class GroupsController < ApplicationController
 
   def index
     render json: { groups: Group.joins(:users).where('users.id' => @user.id) }
+  end
+
+  def destroy
+    @group.destroy!
+
+    render json: { message: 'Group deleted' }, status: :ok
+
+  rescue StandardError => e
+    render json: { message: e.message }, status: :bad_request
   end
 
   private

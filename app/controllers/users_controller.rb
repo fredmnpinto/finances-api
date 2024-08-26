@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :require_user, only: %i[show]
+  before_action :require_user, only: %i[show destroy]
   before_action :require_group, only: %i[list]
 
   def create
@@ -25,6 +25,15 @@ class UsersController < ApplicationController
 
   def list
     render json: { users: User.joins(:groups).where('groups.id' => @group.id) }
+  end
+
+  def destroy
+    @user.destroy!
+
+    render json: { message: 'User deleted' }, status: :ok
+
+  rescue StandardError => e
+    render json: { message: e.message }, status: :bad_request
   end
 
   private
