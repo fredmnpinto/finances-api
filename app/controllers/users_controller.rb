@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :require_user, only: %i[show destroy update]
-  before_action :require_group, only: %i[list create]
+  before_action :require_group, only: %i[index create]
   before_action :require_user_params, only: %i[create update]
 
   def create
@@ -16,7 +16,7 @@ class UsersController < ApplicationController
     render json: @user
   end
 
-  def list
+  def index
     render json: { users: User.joins(:groups).where('groups.id' => @group.id) }
   end
 

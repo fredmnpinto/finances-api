@@ -1,5 +1,5 @@
 class Expense < ApplicationRecord
-  belongs_to :group
+  belongs_to :group, required: true
 
   validates :amount, presence: true, numericality: { greater_than: 0 }
   validates :title, presence: true
