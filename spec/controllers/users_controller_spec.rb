@@ -76,6 +76,21 @@ RSpec.describe UsersController do
         expect(User.find_by_first_name(@request_user.first_name)).to be_nil
       end
     end
+
+    context 'when the user parameters are not valid' do
+      before :each do
+        @group = FactoryBot.create(:group)
+        @request_user = FactoryBot.build(:user, email: nil)
+
+        post :create, params: { user: { first_name: @request_user.first_name, last_name: @request_user.last_name, email: @request_user.email }, group_id: @group.id }
+      end
+
+      it { is_expected.to respond_with :bad_request }
+
+      it 'should display the invalid attributes' do
+        expect(JSON.parse(response.body)['message']).to include("Email can't be blank")
+      end
+    end
   end
 
   describe '#update' do
@@ -105,14 +120,44 @@ RSpec.describe UsersController do
   end
 
   describe '#destroy' do
-    before :each do
-      delete :destroy, params: { user_id: @user.id }
+    context 'when a user is supplied' do
+      before :each do
+        delete :destroy, params: { user_id: @user.id }
+      end
+
+      it { should respond_with :success }
+
+      it 'should destroy the user' do
+        expect(User.exists?(id: @user.id)).to be_falsey
+      end
     end
 
-    it { should respond_with :success }
+    context 'when a non-existing user is supplied' do
+      before :each do
+        delete :destroy, params: { user_id: '99' }
+      end
 
-    it 'should destroy the user' do
-      expect(User.exists?(id: @user.id)).to be_falsey
+      it { is_expected.to respond_with :not_found }
+
+      it 'should render the error' do
+        expect(JSON.parse(response.body)['message']).to include("User not found")
+      end
     end
+
+    context 'when destroy fails' do
+      before :each do
+        @error_message = "Sample message"
+        User.any_instance.stubs(:destroy!).raises StandardError, @error_message
+
+        delete :destroy, params: { user_id: @user.id }
+      end
+
+      it { is_expected.to respond_with :internal_server_error }
+
+      it 'should render the error' do
+        expect(JSON.parse(response.body)['message']).to include(@error_message)
+      end
+    end
+
   end
 end

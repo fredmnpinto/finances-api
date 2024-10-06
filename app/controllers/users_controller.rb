@@ -32,7 +32,7 @@ class UsersController < ApplicationController
     render json: { message: 'User deleted' }, status: :ok
 
   rescue StandardError => e
-    render json: { message: e.message }, status: :bad_request
+    render json: { message: e.message }, status: :internal_server_error
   end
 
   private
