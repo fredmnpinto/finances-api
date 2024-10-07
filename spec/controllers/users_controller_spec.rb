@@ -53,7 +53,7 @@ RSpec.describe UsersController do
         @group = FactoryBot.create(:group)
         @request_user = FactoryBot.build(:user, groups: [@group])
 
-        post :create, params: { user: { first_name: @request_user.first_name, last_name: @request_user.last_name, email: @request_user.email }, group_id: @group.id }
+        post :create, params: { user: user_parameters(@request_user), group_id: @group.id }
       end
 
       it { should respond_with :created }
@@ -160,4 +160,8 @@ RSpec.describe UsersController do
     end
 
   end
+end
+
+def user_parameters(user)
+  user.serializable_hash.except('id', 'created_at', 'updated_at')
 end

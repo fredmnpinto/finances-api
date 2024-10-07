@@ -34,7 +34,7 @@ class ExpensesController < ApplicationController
     render json: { message: 'Expense deleted' }, status: :ok
 
   rescue StandardError => e
-    render json: { message: e.message }, status: :bad_request
+    render json: { message: e.message }, status: :internal_server_error
   end
 
   private
